@@ -1,0 +1,7 @@
+#!fsharp
+
+#r "CookLangLib/bin/Debug/net6.0/CookLangLib.dll"
+#r "nuget: UnitsNet, 5.0.0-alpha003"
+open CookLangLib.Test
+
+test

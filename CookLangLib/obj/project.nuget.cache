@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "eJbtEcwcge71AcjUtnJKtu0gZKhkJI7ifBhuJwQQCYH8fCA+BfhHNYTN9gDJGnPEcuq+mL/+UvH7MUjdAK5Zrw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\admin\\Documents\\repos\\CookLangLib\\CookLangLib\\CookLangLib.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\admin\\.nuget\\packages\\fsharp.core\\6.0.1\\fsharp.core.6.0.1.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\unitsnet\\5.0.0-alpha003\\unitsnet.5.0.0-alpha003.nupkg.sha512"
+  ],
+  "logs": []
+}

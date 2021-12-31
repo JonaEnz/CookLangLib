@@ -1,0 +1,22 @@
+{
+  "minute": "minute",
+  "minutes": "minutes",
+  "second": "second",
+  "seconds": "seconds",
+  "hour": "hour",
+  "hours": "hours",
+  "weightUnits": [
+    { "Item1": 6, "Item2": "g" },
+    { "Item1": 8, "Item2": "kg" },
+    { "Item1": 18, "Item2": "oz" },
+    { "Item1": 19, "Item2": "lb" }
+  ],
+  "volumeUnits": [
+    { "Item1": 40, "Item2": "ml" },
+    { "Item1": 32, "Item2": "l" },
+    { "Item1": 47, "Item2": "fl oz" },
+    { "Item1": 48, "Item2": "pt" },
+    { "Item1": 49, "Item2": "qt" },
+    { "Item1": 45, "Item2": "gal" }
+  ]
+}

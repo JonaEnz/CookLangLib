@@ -1,0 +1,10 @@
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\bin\Debug\net6.0\CookLangLib.deps.json
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\bin\Debug\net6.0\CookLangLib.dll
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\bin\Debug\net6.0\CookLangLib.pdb
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\bin\Debug\net6.0\CookLangLib.xml
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\obj\Debug\net6.0\CookLangLib.fsproj.AssemblyReference.cache
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\obj\Debug\net6.0\CookLangLib.AssemblyInfoInputs.cache
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\obj\Debug\net6.0\CookLangLib.AssemblyInfo.fs
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\obj\Debug\net6.0\CookLangLib.dll
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\obj\Debug\net6.0\CookLangLib.xml
+C:\Users\admin\Documents\repos\CookLangLib\CookLangLib\obj\Debug\net6.0\CookLangLib.pdb
