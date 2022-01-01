@@ -4,6 +4,21 @@ open System.Text.RegularExpressions
 open System
 
 module Parser =
+    let addIndexTo (s:string) (line:string) =
+        let addIndexToInner (s:string) (line:string) (i:int) =
+            let r = Regex line
+            let m = r.Match ("(" + Regex.Escape s + ")")
+            if m.Success then
+                (r.Replace(line, s + i.ToString(), 1), i+1) |> Some
+            else
+                None
+        List.unfold (fun state -> 
+            state 
+            ||> addIndexToInner s
+            |> Option.map (fun (s,i) -> s,(s,i))) 
+            (s,0)
+        |> List.last
+
     let parseUnit unit config =
         let parseConfList unit configList =
             List.tryFind (fun (_, s) -> s = unit) configList
@@ -17,35 +32,35 @@ module Parser =
     let parseIngredient config line=
 
         let reg =
-            Regex "@(?:([\w ]+){([\w \.]*)(?:%(\S+))?})|@(\w+)"
+            Regex @"@(?:([\w ]+){([\w \.]*)(?:%(\S+))?})|@(\w+)"
 
         let m = reg.Match line
 
         if not m.Success then None else
 
-        let out = reg.Replace(line, "\$I", 1)
+        let out = reg.Replace(line, "$I", 1)
 
         
         let res = 
             match ((Seq.map (fun (g: Group) -> g.Value) m.Groups.Values)
                |> Seq.toList)
             with
-            | [ name; amount; unit; _ ] when name <> "" && amount <> "" && unit <> "" ->
+            | [ _;name; amount; unit; _ ] when name <> "" && amount <> "" && unit <> "" ->
                 { name = name;
                 unit = parseUnit unit config;
                 amount = float (amount) },
                 out
-            | [ name; amount; _; _ ] when name <> "" && amount <> "" ->
+            | [ _;name; amount; _; _ ] when name <> "" && amount <> "" ->
                 { name = name;
                 unit = Amount;
                 amount = float (amount) },
                 out
-            | [ name; _; _; _ ] when name <> "" ->
+            | [ _;name; _; _; _ ] when name <> "" ->
                 { name = name;
                 unit = Amount;
                 amount = 1.0 },
                 out
-            | [ _; _; _; name ] when name <> "" ->
+            | [ _;_; _; _; name ] when name <> "" ->
                 { name = name;
                 unit = Amount;
                 amount = 1.0 },
@@ -54,45 +69,45 @@ module Parser =
         Some res
 
     let parseCookware line =
-        let reg = Regex "#([\w ]*){}|#(\w+)"
+        let reg = Regex @"#([\w ]*){}|#(\w+)"
         let m = reg.Match line
         if not m.Success then None else
 
-        let out = reg.Replace(line, "\$C", 1)
+        let out = reg.Replace(line, "$C", 1)
 
         let res =
             match ((Seq.map (fun (g: Group) -> g.Value) m.Groups.Values)
                 |> Seq.toList)
                 with
-            | [ name; _ ] when name <> "" -> { name = name; amount = 1 }, out
-            | [ _; name ] when name <> "" -> { name = name; amount = 1 }, out
+            | [_; name; _ ] when name <> "" -> { name = name; amount = 1 }, out
+            | [_; _; name ] when name <> "" -> { name = name; amount = 1 }, out
             | _ -> failwith ("Could not parse cookware: " + line)
         Some res
 
     let parseTimer (line: string) =
         let reg =
-            Regex "~(.*){(\d+(?:\.\d+)?)%()}"
+            Regex @"~(.*){(\d+(?:\.\d+)?)%()}"
 
         let m = reg.Match(line.ToLower())
         if not m.Success then None else
 
         let out=
-            reg.Replace(line.ToLower(), "\$T", 1)
+            reg.Replace(line.ToLower(), "$T", 1)
 
         match ((Seq.map (fun (g: Group) -> g.Value) m.Groups.Values)
                |> Seq.toList)
             with
-        | [ name; length; "hour" ] ->
+        | [ _; name; length; "hour" ] ->
             ({ name = name
                length = TimeSpan.FromHours(float (length)) },
              out)
             |> Some
-        | [ name; length; "minute" ] ->
+        | [ _; name; length; "minute" ] ->
             ({ name = name
                length = TimeSpan.FromMinutes(float (length)) },
              out)
             |> Some
-        | [ name; length; _ ] ->
+        | [ _; name; length; _ ] ->
             ({ name = name
                length = TimeSpan.FromSeconds(float (length)) },
              out)
@@ -107,7 +122,7 @@ module Parser =
             | _, _, Some (t,s) -> Some ({step with timers = (List.append step.timers [t])}, s)
             | _, _, _ -> None
         let splitComment (line:string) =
-            let commentReg = Regex "(.*)\[-(.*)-\](.*)"
+            let commentReg = Regex @"(.*)\[-(.*)-\](.*)"
             if line.Split("--").Length > 1 then
                 (line.Split("--") |> Array.head, line.Split("--") |> Array.last)
             else
@@ -120,5 +135,34 @@ module Parser =
             (fun (l,s) -> innerParse l s |> Option.map (fun (ste, str) -> (str,ste),(str,ste)))
             (line, ({comment=""; text="";ingredients = []; cookware = []; timers = [] }))
         |> List.last
-        |> fun (str,ste) -> {ste with comment = snd (splitComment str); text = fst (splitComment str)}
+        |> fun (str,ste) -> 
+            {ste with 
+                    comment = snd (splitComment str)
+                    text = 
+                        (splitComment str) 
+                        |> fst 
+                        |> addIndexTo "$I" 
+                        |> addIndexTo "$C" 
+                        |> addIndexTo "$T";
+            }
 
+    let parseRecipe config (recipe: string list) =
+        let metadataReg = Regex @">> (.*): (.*)"
+        let parseMetadata map line =
+            let m = metadataReg.Match line
+            if not m.Success then map else
+
+            match ((Seq.map (fun (g: Group) -> g.Value) m.Groups.Values)
+                |> Seq.toList)
+            with
+            | [ _; key; value ] when key <> "" -> Map.add key value map
+            | _ -> failwith ("Could not parse metadata: " + line)
+        
+        
+        List.fold (fun (metadata,steps) line -> 
+        if metadataReg.IsMatch line then 
+            (parseMetadata metadata line, steps)
+        else
+            (metadata, List.append steps [parseStep config line])
+        ) (Map.empty, []) recipe
+        |> fun (metadata, steps) ->{ metadata = metadata; steps = steps;}

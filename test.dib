@@ -2,6 +2,28 @@
 
 #r "CookLangLib/bin/Debug/net6.0/CookLangLib.dll"
 #r "nuget: UnitsNet, 5.0.0-alpha003"
-open CookLangLib.Test
+open CookLangLib
+open UnitsNet.Units
+open System.Text.RegularExpressions
 
-test
+let config: LanguageConfiguration =
+            { minute = "minute"
+              minutes = "minutes"
+              second = "second"
+              seconds = "seconds"
+              hour = "hour"
+              hours = "hours"
+              weightUnits =
+                [ (MassUnit.Gram, "g")
+                  (MassUnit.Kilogram, "kg")
+                  (MassUnit.Ounce, "oz")
+                  (MassUnit.Pound, "lb") ]
+              volumeUnits =
+                [ (VolumeUnit.Milliliter, "ml")
+                  (VolumeUnit.Liter, "l")
+                  (VolumeUnit.UsOunce, "oz")
+                  (VolumeUnit.UsPint, "pt")
+                  (VolumeUnit.UsQuart, "qt")
+                  (VolumeUnit.UsGallon, "gal") ] }
+
+parseIngredient config "@test"
