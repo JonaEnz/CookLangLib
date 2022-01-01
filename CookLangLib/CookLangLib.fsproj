@@ -5,8 +5,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="models.fs" />
-    <Compile Include="Recipe.fs" />
     <Compile Include="parser.fs" />
+    <Compile Include="helper.fs" />
+    <Compile Include="writer.fs" />
+    <Compile Include="Recipe.fs" />
+    <Compile Include="printer.fs" />
     <Compile Include="Library.fs" />
   </ItemGroup>
   <ItemGroup>

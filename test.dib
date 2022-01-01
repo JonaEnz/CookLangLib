@@ -5,51 +5,12 @@
 open CookLangLib
 open UnitsNet.Units
 open System.Text.RegularExpressions
+open System.Text.Json
 
-let config: LanguageConfiguration =
-            { minute = "minute"
-              minutes = "minutes"
-              second = "second"
-              seconds = "seconds"
-              hour = "hour"
-              hours = "hours"
-              weightUnits =
-                [ (MassUnit.Gram, "g")
-                  (MassUnit.Kilogram, "kg")
-                  (MassUnit.Ounce, "oz")
-                  (MassUnit.Pound, "lb") ]
-              volumeUnits =
-                [ (VolumeUnit.Milliliter, "ml")
-                  (VolumeUnit.Liter, "l")
-                  (VolumeUnit.UsOunce, "oz")
-                  (VolumeUnit.UsPint, "pt")
-                  (VolumeUnit.UsQuart, "qt")
-                  (VolumeUnit.UsGallon, "gal") ] }
+let config = File.ReadAllText "CookLangLib/en-US.json" |>Parser.parseConfig
 
 Parser.parseIngredient config "@test{1%kg}"
 Parser.parseCookware "#Pan{}"
 Parser.parseStep config "@test{1%kg} @test{1%kg} [-Hi-] a"
 Parser.parseTimer "~test{10%minutes}"
 Parser.parseRecipe config ["@test{1%kg} ~test{10%minutes} @test{1%kg} [-Hi-] a";">> source: https://test.com"]
-
-#!fsharp
-
-let addIndexTo (s:string) (line:string) =
-        let addIndexToInner (s:string) (line:string) (i:int) =
-            let r = Regex ("(" + Regex.Escape s + ")($|[^\d])")
-            let m = r.Match line
-            if m.Success && i < 10 then
-                (r.Replace(line, s + i.ToString() + "$2", 1), i+1) |> Some
-            else
-                None
-        List.unfold (fun state -> 
-            state 
-            ||> addIndexToInner s
-            |> Option.map (fun (s,i) -> s,(s,i))) 
-            (line,0)
-        |> fun l -> if List.length l > 0 then List.last l else line
-
-"$T $T $C $T" 
-|> addIndexTo "$I" 
-|> addIndexTo "$C" 
-|> addIndexTo "$T"

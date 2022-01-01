@@ -1,5 +1,7 @@
 namespace CookLangLib
 
+open CookLangLib
+
 module RecipeExtensions =
     type Recipe with
         member this.ingredients =

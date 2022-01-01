@@ -1,8 +1,8 @@
 namespace CookLangLib
 
-open System.Text.RegularExpressions
 open System
-
+open System.Text.Json
+open System.Text.RegularExpressions
 module Parser =
     let addIndexTo (s:string) (line:string) =
         let addIndexToInner (s:string) (line:string) (i:int) =
@@ -165,3 +165,9 @@ module Parser =
             (metadata, List.append steps [parseStep config line])
         ) (Map.empty, []) recipe
         |> fun (metadata, steps) ->{ metadata = metadata; steps = steps;}
+
+    let parseConfig (json:string) =
+        try 
+            JsonSerializer.Deserialize<LanguageConfiguration>(json)
+        with
+        | _ -> failwith ("Could not parse config: " + json)
