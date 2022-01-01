@@ -22,7 +22,8 @@ type Step =
     { text: string
       ingredients: Ingredient list
       cookware: Cookware list
-      timers: Timer list }
+      timers: Timer list
+      comment: string }
 
 type Recipe =
     { steps: Step list
