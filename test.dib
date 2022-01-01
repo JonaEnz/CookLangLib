@@ -14,3 +14,4 @@ Parser.parseCookware "#Pan{}"
 Parser.parseStep config "@test{1%kg} @test{1%kg} [-Hi-] a"
 Parser.parseTimer "~test{10%minutes}"
 Parser.parseRecipe config ["@test{1%kg} ~test{10%minutes} @test{1%kg} [-Hi-] a";">> source: https://test.com"]
+|> Writer.writeRecipe config

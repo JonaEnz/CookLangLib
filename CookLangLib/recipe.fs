@@ -25,3 +25,11 @@ module RecipeExtensions =
 
         member this.cookware =
             List.collect (fun s -> s.cookware) this.steps
+
+        member this.writeToFile config (fileName: string) =
+            let recipe = this
+            let recipeText = Writer.writeRecipe config recipe
+            let file = System.IO.File.OpenWrite(fileName)
+            let writer = new System.IO.StreamWriter(file)
+            writer.Write(recipeText)
+            writer.Close()
