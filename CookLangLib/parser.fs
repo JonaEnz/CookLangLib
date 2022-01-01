@@ -6,18 +6,18 @@ open System
 module Parser =
     let addIndexTo (s:string) (line:string) =
         let addIndexToInner (s:string) (line:string) (i:int) =
-            let r = Regex line
-            let m = r.Match ("(" + Regex.Escape s + ")")
-            if m.Success then
-                (r.Replace(line, s + i.ToString(), 1), i+1) |> Some
+            let r = Regex ("(" + Regex.Escape s + ")($|[^\d])")
+            let m = r.Match line
+            if m.Success && i < 10 then
+                (r.Replace(line, s + i.ToString() + "$2", 1), i+1) |> Some
             else
                 None
         List.unfold (fun state -> 
             state 
             ||> addIndexToInner s
             |> Option.map (fun (s,i) -> s,(s,i))) 
-            (s,0)
-        |> List.last
+            (line,0)
+        |> fun l -> if List.length l > 0 then List.last l else line
 
     let parseUnit unit config =
         let parseConfList unit configList =
@@ -86,13 +86,13 @@ module Parser =
 
     let parseTimer (line: string) =
         let reg =
-            Regex @"~(.*){(\d+(?:\.\d+)?)%()}"
+            Regex @"~(.*){(\d+(?:\.\d+)?)%(hour|minute|second)s?}"
 
-        let m = reg.Match(line.ToLower())
+        let m = reg.Match(line)
         if not m.Success then None else
 
         let out=
-            reg.Replace(line.ToLower(), "$T", 1)
+            reg.Replace(line, "$T", 1)
 
         match ((Seq.map (fun (g: Group) -> g.Value) m.Groups.Values)
                |> Seq.toList)
@@ -129,7 +129,7 @@ module Parser =
 
             let comment = commentReg.Match line
             if not comment.Success then line, "" else
-            (comment.Captures[0].Value + " " + comment.Captures[2].Value, comment.Captures[1].Value)
+            (comment.Groups[1].Value + " " + comment.Groups[3].Value, comment.Groups[2].Value)
 
         List.unfold 
             (fun (l,s) -> innerParse l s |> Option.map (fun (ste, str) -> (str,ste),(str,ste)))
@@ -138,8 +138,7 @@ module Parser =
         |> fun (str,ste) -> 
             {ste with 
                     comment = snd (splitComment str)
-                    text = 
-                        (splitComment str) 
+                    text = (splitComment str) 
                         |> fst 
                         |> addIndexTo "$I" 
                         |> addIndexTo "$C" 
