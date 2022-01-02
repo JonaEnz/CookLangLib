@@ -44,19 +44,18 @@ module Writer =
         | Amount -> ""
 
     let writeIngredient config (ing: Ingredient) =
-        if ing.amount <> 1.0 then
-            if (ing.unit <> Amount) then
-                $"@{ing.name} "
-                + "{"
-                + getUnitName config ing.amount ing.unit
-                + "}"
-            else
-                $"@{ing.name} "
-                + "{"
-                + $"{ing.amount.ToString()}"
-                + "}"
-        else
-            $"@{ing.name}" + "{}"
+        match ing.amount <> 1.0, ing.unit with
+        | (true, Amount) ->
+            $"@{ing.name} "
+            + "{"
+            + $"{ing.amount.ToString()}"
+            + "}"
+        | (false, Amount) -> $"@{ing.name}" + "{}"
+        | (_, u) ->
+            $"@{ing.name} "
+            + "{"
+            + getUnitName config ing.amount u
+            + "}"
 
     let writeCookware (c: Cookware) = "#" + c.name + "{}"
 
@@ -77,12 +76,12 @@ module Writer =
 
                 Regex.Replace(text, "\$I(\d+)", writeIngredient config (s.ingredients.[i]))
                 |> Some
-            | m, _, _ when m.Success ->
+            | _, m, _ when m.Success ->
                 let i = int (m.Groups.[1].Value)
 
                 Regex.Replace(text, "\$C(\d+)", writeCookware (s.cookware.[i]))
                 |> Some
-            | m, _, _ when m.Success ->
+            | _, _, m when m.Success ->
                 let i = int (m.Groups.[1].Value)
 
                 Regex.Replace(text, "\$T(\d+)", writeTimer (s.timers.[i]))

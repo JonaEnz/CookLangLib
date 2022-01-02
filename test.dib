@@ -9,9 +9,9 @@ open System.Text.Json
 
 let config = File.ReadAllText "CookLangLib/en-US.json" |>Parser.parseConfig
 
-Parser.parseIngredient config "@test{1%kg}"
-Parser.parseCookware "#Pan{}"
-Parser.parseStep config "@test{1%kg} @test{1%kg} [-Hi-] a"
-Parser.parseTimer "~test{10%minutes}"
+printf "%A" (Parser.parseIngredient config "@test{1%kg}")
+printf "%A" (Parser.parseCookware "#Pan{}")
+printf "%A" (Parser.parseStep config "@test{1%kg} @test{1%kg} [-Hi-] a")
+printf "%A" (Parser.parseTimer "~test{10%minutes}")
 Parser.parseRecipe config ["@test{1%kg} ~test{10%minutes} @test{1%kg} [-Hi-] a";">> source: https://test.com"]
 |> Writer.writeRecipe config

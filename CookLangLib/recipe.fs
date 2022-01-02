@@ -33,3 +33,9 @@ module RecipeExtensions =
             let writer = new System.IO.StreamWriter(file)
             writer.Write(recipeText)
             writer.Close()
+
+        static member fromFile config (filePath: string) =
+            Parser.parseRecipe
+                config
+                (System.IO.File.ReadAllLines filePath
+                 |> Array.toList)
