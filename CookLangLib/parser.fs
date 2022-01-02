@@ -8,7 +8,7 @@ module Parser =
         let addIndexToInner (s:string) (line:string) (i:int) =
             let r = Regex ("(" + Regex.Escape s + ")($|[^\d])")
             let m = r.Match line
-            if m.Success && i < 10 then
+            if m.Success then
                 (r.Replace(line, s + i.ToString() + "$2", 1), i+1) |> Some
             else
                 None
@@ -134,7 +134,8 @@ module Parser =
         List.unfold 
             (fun (l,s) -> innerParse l s |> Option.map (fun (ste, str) -> (str,ste),(str,ste)))
             (line, ({comment=""; text="";ingredients = []; cookware = []; timers = [] }))
-        |> List.last
+        |> List.tryLast
+        |> Option.defaultValue (line, ({comment=""; text="";ingredients = []; cookware = []; timers = [] }))
         |> fun (str,ste) -> 
             {ste with 
                     comment = snd (splitComment str)

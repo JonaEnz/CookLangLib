@@ -10,7 +10,7 @@ module Writer =
             config.weightUnits
             |> List.map (fun (u, s) -> (mass.ToUnit u), s)
 
-        List.filter (fun (m: Mass, s) -> m.Value >= 1.0) converted
+        List.filter (fun (m: Mass, _) -> m.Value >= 1.0) converted
         |> List.sortBy (fun (m, _) -> m.Value)
         |> List.tryHead
         |> Option.defaultValue (List.head converted)
@@ -74,22 +74,26 @@ module Writer =
             | m, _, _ when m.Success ->
                 let i = (m.Groups.[1]).Value |> int
 
-                Regex.Replace(text, "\$I(\d+)", writeIngredient config (s.ingredients.[i]))
+                (Regex "\$I(\d+)")
+                    .Replace(text, writeIngredient config (s.ingredients.[i]), 1)
                 |> Some
             | _, m, _ when m.Success ->
                 let i = int (m.Groups.[1].Value)
 
-                Regex.Replace(text, "\$C(\d+)", writeCookware (s.cookware.[i]))
+                (Regex "\$C(\d+)")
+                    .Replace(text, writeCookware (s.cookware.[i]), 1)
                 |> Some
             | _, _, m when m.Success ->
                 let i = int (m.Groups.[1].Value)
 
-                Regex.Replace(text, "\$T(\d+)", writeTimer (s.timers.[i]))
+                (Regex "\$T(\d+)")
+                    .Replace(text, writeTimer (s.timers.[i]), 1)
                 |> Some
             | _ -> None
 
         List.unfold (fun (state: string) -> state |> innerPrint |> Option.map (fun s -> s, s)) s.text
-        |> List.last
+        |> List.tryLast
+        |> Option.defaultValue s.text
         |> fun str ->
             if s.comment.Length > 0 then
                 str + "--" + s.comment
