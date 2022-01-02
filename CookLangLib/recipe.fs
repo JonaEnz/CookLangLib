@@ -34,6 +34,23 @@ module RecipeExtensions =
             writer.Write(recipeText)
             writer.Close()
 
+        member this.getServings =
+            if this.metadata.ContainsKey "servings" then
+                this.metadata.["servings"] |> int
+            else
+                1
+
+        member this.setServings(i: int) =
+            this.metadata.["servings"] = i.ToString()
+
+        member this.getSource =
+            if this.metadata.ContainsKey "source" then
+                this.metadata.["source"]
+            else
+                ""
+
+        member this.setSource(source: string) = this.metadata.["source"] = source
+
         static member fromFile config (filePath: string) =
             Parser.parseRecipe
                 config

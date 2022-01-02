@@ -2,6 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>CookLangLib</PackageId>
+    <Version>0.1.0-alpha001</Version>
+    <Authors>Jona Enzinger</Authors>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="models.fs" />

@@ -1,9 +1,7 @@
 #!fsharp
 
 #r "CookLangLib/bin/Debug/net6.0/CookLangLib.dll"
-#r "nuget: UnitsNet, 5.0.0-alpha003"
 open CookLangLib
-open UnitsNet.Units
 open System.Text.RegularExpressions
 open System.Text.Json
 
@@ -13,5 +11,5 @@ printf "%A" (Parser.parseIngredient config "@test{1%kg}")
 printf "%A" (Parser.parseCookware "#Pan{}")
 printf "%A" (Parser.parseStep config "@test{1%kg} @test{1%kg} [-Hi-] a")
 printf "%A" (Parser.parseTimer "~test{10%minutes}")
-Parser.parseRecipe config ["@test{1%kg} ~test{10%minutes} @test{1%kg} [-Hi-] a";">> source: https://test.com"]
+Parser.parseRecipe config ["@test{1%kg} ~test{10%minutes} @test{1%kg} #wide pan{}  [-Hi-] a";">> source: https://test.com"]
 |> Writer.writeRecipe config
