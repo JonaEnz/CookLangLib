@@ -5,6 +5,7 @@
     <PackageId>CookLangLib</PackageId>
     <Version>0.1.0-alpha001</Version>
     <Authors>Jona Enzinger</Authors>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="models.fs" />
@@ -14,6 +15,7 @@
     <Compile Include="Recipe.fs" />
     <Compile Include="printer.fs" />
     <Compile Include="Library.fs" />
+    <None Include="LICENSE.txt" Pack="true" PackagePath="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="UnitsNet" Version="5.0.0-alpha003" />

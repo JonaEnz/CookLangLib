@@ -163,9 +163,13 @@ module Parser =
         if metadataReg.IsMatch line then 
             (parseMetadata metadata line, steps)
         else
-            (metadata, List.append steps [parseStep config line])
+            (metadata, 
+                if String.IsNullOrWhiteSpace line 
+                then steps
+                else List.append steps [parseStep config line])
         ) (Map.empty, []) recipe
-        |> fun (metadata, steps) ->{ metadata = metadata; steps = steps;}
+        |> fun (metadata, steps) 
+            ->{ metadata = metadata; steps = steps;}
 
     let parseConfig (json:string) =
         try 

@@ -16,3 +16,25 @@ printf "%A" (Parser.parseStep config "@test{1%kg} @test{1%kg} [-Hi-] a")
 printf "%A" (Parser.parseTimer "~test{10%minutes}")
 Parser.parseRecipe config ["@test{1%kg} ~test{10%minutes} @test{2%g} #wide pan{}  [-Hi-] a";">> source: https://test.com"]
 |> Writer.writeRecipe config
+
+#!fsharp
+
+#r "CookLangLib/bin/Debug/net6.0/CookLangLib.dll"
+#r "nuget: UnitsNet, 5.0.0-alpha003"
+open CookLangLib
+open CookLangLib.RecipeExtensions
+open UnitsNet.Units
+open System.Text.RegularExpressions
+open System.Text.Json
+
+let config = File.ReadAllText "CookLangLib/en-US.json" |>Parser.parseConfig
+let HowManySatisfy pred = Seq.filter pred >> Seq.length 
+
+Parser.parseRecipe config ["@test{1%kg} ~test{10%minutes} @test{2%g} #wide pan{}  [-Hi-] a";"";"";">> source: https://test.com"]
+|> Writer.writeRecipe config
+|> fun s -> s.Split("\n")
+|> Array.toList
+|> Parser.parseRecipe config
+|> Writer.writeRecipe config
+|> HowManySatisfy ((=) '\n') 
+|> (+) 1

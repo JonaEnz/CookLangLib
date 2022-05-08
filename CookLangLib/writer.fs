@@ -101,7 +101,9 @@ module Writer =
                 str
 
     let writeRecipe config (r: Recipe) =
-        let steps = List.map (writeStep config) r.steps
+        let steps =
+            List.map (writeStep config) r.steps
+            |> List.collect (fun s -> [ s; "" ])
 
         let metadata =
             List.map (fun (k, v) -> $">> {k}: {v}") (Map.toList r.metadata)
